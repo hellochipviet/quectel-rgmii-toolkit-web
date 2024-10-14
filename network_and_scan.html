@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Network & Scan</title>
+
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+
+    <link rel="simpleadmin-logo" href="favicon.ico" />
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/alpinejs.min.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <div class="header" x-data="cellLocking()">
+        <nav class="navbar navbar-expand-lg mt-2">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="/"
+              ><img src="assets/images/Icon.png" alt=""></a
+            >
+            <button
+              class="navbar-toggler"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarText"
+              aria-controls="navbarText"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                  <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/network_and_scan.html"
+                    >Network & Scan</a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/sms.html">SMS</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/console">Console</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="deviceinfo.html"
+                    >Device Information</a
+                  >
+                </li>
+              </ul>
+              <span class="navbar-text">
+                <button class="btn btn-link text-reset" id="darkModeToggle">
+                  Dark Mode
+                </button>
+              </span>
+            </div>
+          </div>
+        </nav>
+      </div>
+
+      <div class="network-utilities_container">
+        <div class="network-utilities_title">
+          <p class="network-utilities-title_text">Network Utilities</p>
+          <div class="btn_save">Save Changes</div>
+        </div>
+        <div class="network-utilities_content">
+          <div class="network-utilities_content--left">
+            <div class="chose-network card-body row">
+              <div class="col">
+                <div class="mb-4">
+                  <label for="APN" class="form-label opacity-50">APN</label>
+                  <input
+                    type="text"
+                    class="form-control form-field"
+                    id="APN"
+                    x-model="newApn"
+                    aria-describedby="APN"
+                    x-bind:placeholder="apn === '-' ? 'Fetching...' : apn"
+                  />
+                </div>
+
+                <div class="mb-4">
+                  <label for="ipForAPN" class="form-label opacity-50"
+                    >Choose APN PDP Type</label
+                  >
+                  <select
+                    class="form-select form-field"
+                    id="ipAPN"
+                    x-model="newApnIP"
+                    aria-label="ipForAPN"
+                  >
+                    <option
+                      selected
+                      x-text="apnIP === '-' ? 'Fetching...' : 'Current: ' + apnIP"
+                    ></option>
+                    <option value="1">IPv4 Only</option>
+                    <option value="2">IPv6 Only</option>
+                    <option value="3">IPv4v6</option>
+                    <option value="4">P2P Protocol</option>
+                  </select>
+                </div>
+
+                <div class="mb-4 input-group grid gap-3">
+                  <label for="SIM1" class="form-label opacity-50"> Change SIM</label>
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="inlineRadioOptions"
+                      aria-describedby="SIM1"
+                      id="SIM1"
+                      value="option1"
+                      x-bind:checked="sim === '1'"
+                      x-on:click="newSim = '1'"
+                    />
+                    <label class="form-check-label" for="inlineRadio1">SIM 1</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="inlineRadioOptions"
+                      aria-describedby="SIM2"
+                      id="SIM2"
+                      value="option2"
+                      x-bind:checked="sim === '2'"
+                      x-on:click="newSim = '2'"
+                    />
+                    <label class="form-check-label" for="inlineRadio2">SIM 2</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="mb-4">
+                  <label for="nrModeControl" class="form-label opacity-50"
+                    >Select Preferred Network</label
+                  >
+                  <select
+                    class="form-select form-field"
+                    id="prefNetworkMode"
+                    x-model="prefNetworkMode"
+                    aria-label="prefNetworkMode"
+                  >
+                    <option
+                      selected
+                      x-text="prefNetwork === '-' ? 'Fetching...' : 'Current: ' + prefNetwork"
+                    ></option>
+                    <option value="AUTO">AUTO</option>
+                    <option value="LTE">LTE Only</option>
+                    <option value="LTE:NR5G">NR5G-NSA</option>
+                    <option value="NR5G">NR5G-SA</option>
+                  </select>
+                </div>
+                <div class="mb-4">
+                  <label for="prefNetwork" class="form-label opacity-50"
+                    >NR5G Model Control</label
+                  >
+                  <select
+                    class="form-select form-field"
+                    id="nrModeControl"
+                    x-model="nrModeControl"
+                    aria-label="nrModeControl"
+                  >
+                    <option
+                      selected
+                      x-text="nrModeControl === '-' ? 'Fetching...' : 'Current: ' + nrModeControl"
+                    ></option>
+                    <option value="0">Enable All</option>
+                    <option value="2">Disable NR5G-NSA</option>
+                    <option value="1">Disable NR5G-SA</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="network-utilities_content--right">
+            <div class="cell-locking">
+              <div class="cell-locking-container">
+                <div class="card-header">Cell Locking</div>
+                <div class="">
+                  <select
+                    class="form-select form-field"
+                    id="networkModeCell"
+                    x-model="networkModeCell"
+                    aria-label="LTE"
+                  >
+                    <option
+                      selected
+                      x-text="'Cell Lock: ' + cellLockStatus"
+                    ></option>
+                    <option>LTE</option>
+                    <option>NR5G-SA</option>
+                    <option>Unlock LTE</option>
+                    <option>Unlock NR5G-SA</option>
+                  </select>
+                </div>
+                <div class="cell-locking_text card-footer">
+                  Cell Locking only works for the primary cell and is not
+                  persistent across reboots.
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="band-locking-container">
+        <div class="band-locking">
+           <div class="band-locking-header">
+            <p class="band-locking-header_title">Band Locking</p>
+            <div class="band-locking-options">
+              <select
+                class="form-select form-field"
+                id="networkModeBand"
+                aria-label="LTE"
+              >
+                <option selected value="LTE">LTE</option>
+                <option value="NSA">NR5G-NSA</option>
+                <option value="SA">NR5G-SA</option>
+              </select>
+            </div>
+           </div>
+           <div class="band-locking-body">
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band" />
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band" />
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band" />
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band" />
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band" />
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+            <div class="check-box-item">
+              <input type="checkbox" id="band" class="band" name="band">
+              <label class="band" for="band">B1</label>
+            </div>
+           </div>
+           <div class="band-locking-footer">
+            <div class="active-band">
+              <p class="active-band_text">Active bands: LTE BAND 66, NR5G BAND 41</p>
+              <div class="checkbox-show">
+                <input type="checkbox" id="show" name="show">
+                <label class="show" for="show">Show Provider Supported Bands</label>
+              </div>
+            </div>
+            <div class="band-locking-btns">
+              <div class="band-locking-btn">Locking Bands</div>
+              <div class="band-locking-btn">Uncheck All</div>
+              <div class="band-locking-btn">Reset</div>
+            </div>
+           </div>
+        </div>
+
+        <div class="scanner-dashboard">
+          <div class="cell-scanner">
+            <div class="cell-scanner-header">
+              <p class="cell-scanner-header_title">Cell Scanner</p>
+            </div>
+            <div class="cell-scanner-body">
+              <p class="cell-scanner-body_title">Cell Scanner will scan all LTE and NR5G-SA cells in your area. Scanning might disconnect your network and take some minutes to complete</p>
+            </div>
+            <div class="cell-scanner-footer">
+              <select
+                class="form-select form-field"
+                id="cellSelect"
+                x-model="cellScanMode"
+              >
+                <option selected>Select Scan Mode</option>
+                <option value="Full Scan">Full Scan</option>
+                <option value="LTE Only">LTE Only</option>
+                <option value="NR5G Only">NR5G Only</option>
+              </select>
+              <button class="btn-scan" id="btnCellScanner">
+               <p class="btn-scan_text">Start Scan</p>
+              </button>
+            </div>
+          </div>
+
+          <div class="neighbourcell-scan">
+            <div class="neighbourcell-scan-header">
+              <p class="neighbourcell-scan-header_title">LTE and NR5G Neighbourcell Scan</p>
+            </div>
+            <div class="neighbourcell-scan-body">
+              <p class="neighbourcell-scan-body_title">Neighbourcell Scan will only scan LTE or NR5G cells from your network provider</p>
+            </div>
+            <div class="neighbourcell-scan-footer">
+              <select
+                class="form-select form-field"
+                id="neighbourCellSelect"
+                x-model="neighbourCellsScanMode"
+                >
+                <option selected>Select Scan Mode</option>
+                <option value="LTE and NR5G">LTE and NR5G</option>
+                <option value="LTE">LTE</option>
+                <option value="NR5G">NR5G</option>
+              </select>
+              <button class="btn-scan" id="btnCellScanning">
+                <p class="btn-scan_text">Start Scan</p>
+               </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="modalCellScenner" class="modal">
+        <div class="modal-scanner-content">
+          <div class="modal-scanner-header">
+            <p class="modal-scanner-header_title">Cell Scanner</p>
+            <img src="assets/images/close.svg" alt="close" class="close">
+          </div>
+          <div class="modal-scanner-body">
+            <div class="fields-scanner">
+              <div class="field-item">
+                <p class="field-item_text">Network</p>
+              </div>
+              <div class="field-item">
+                <p class="field-item_text">Provider</p>
+              </div>
+              <div class="field-item">
+                <p class="field-item_text">Band</p>
+              </div>
+              <div class="field-item">
+                <p class="field-item_text">Frequency</p>
+              </div>
+              <div class="field-item">
+                <p class="field-item_text">PCI</p>
+              </div>
+              <div class="field-item">
+                <p class="field-item_text">RSRP</p>
+              </div>
+              <div class="field-item field-item-signal">
+                <p class="field-item_text">Signal</p>
+              </div>
+            </div>
+            <div class="scanner-list-items">
+              <div class="scanner-item">
+                <p class="scanner-item_text">NR5G</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">T-Mobile US</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">Undefined</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">676</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">-101 </p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">-3276</p>
+              </div>
+              <div class="scanner-item scanner-item-signal">
+                <img src="assets/images/wave.svg" alt="wave">
+              </div>
+            </div>
+            <div class="scanner-list-items">
+              <div class="scanner-item">
+                <p class="scanner-item_text">NR5G</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">T-Mobile US</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">Undefined</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">676</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">-101 </p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">-3276</p>
+              </div>
+              <div class="scanner-item scanner-item-signal">
+                <img src="assets/images/wave.svg" alt="wave">
+              </div>
+            </div>
+            <div class="scanner-list-items">
+              <div class="scanner-item">
+                <p class="scanner-item_text">NR5G</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">T-Mobile US</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">Undefined</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">676</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">-101 </p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">-3276</p>
+              </div>
+              <div class="scanner-item scanner-item-signal">
+                <img src="assets/images/wave.svg" alt="wave">
+              </div>
+            </div>
+            <div class="scanner-list-items">
+              <div class="scanner-item">
+                <p class="scanner-item_text">NR5G</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">T-Mobile US</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">Undefined</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">676</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">-101 </p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">-3276</p>
+              </div>
+              <div class="scanner-item scanner-item-signal">
+                <img src="assets/images/wave.svg" alt="wave">
+              </div>
+            </div>
+            <div class="scanner-list-items">
+              <div class="scanner-item">
+                <p class="scanner-item_text">NR5G</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">T-Mobile US</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">Undefined</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">676</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">-101 </p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">-3276</p>
+              </div>
+              <div class="scanner-item scanner-item-signal">
+                <img src="assets/images/wave.svg" alt="wave">
+              </div>
+            </div>
+            <div class="scanner-list-items">
+              <div class="scanner-item">
+                <p class="scanner-item_text">NR5G</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">T-Mobile US</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">Undefined</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">676</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">-101 </p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">-3276</p>
+              </div>
+              <div class="scanner-item scanner-item-signal">
+                <img src="assets/images/wave.svg" alt="wave">
+              </div>
+            </div>
+            <div class="scanner-list-items">
+              <div class="scanner-item">
+                <p class="scanner-item_text">NR5G</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">T-Mobile US</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">Undefined</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">676</p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">-101 </p>
+              </div>
+              <div class="scanner-item">
+                <p class="scanner-item_text">-3276</p>
+              </div>
+              <div class="scanner-item scanner-item-signal">
+                <img src="assets/images/wave.svg" alt="wave">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="modalCellScenning" class="modal">
+        <div class="modal-scanner-content">
+          <div class="modal-scanner-header">
+            <p class="modal-scanner-header_title">Cell Scanner</p>
+            <img src="assets/images/close.svg" alt="close" class="close-scanning">
+          </div>
+          <div class="modal-scanning-body">
+            <p class="modal-scanning-body_text">Scanning....</p>
+          </div>
+        </div>
+       
+      </div>
+    </main>
+
+    <!-- Import Band Locking GUI JS -->
+    <!-- <script src="js/band-locking.js"></script> -->
+    <script src="js/generate-freq-box.js"></script>
+    <script src="js/populate-checkbox.js"></script>
+    <script src="js/parse-settings.js"></script>
+    <script src="js/dark-mode.js"></script>
+    <script>
+      var modal = document.getElementById("modalCellScenner");
+      var btn = document.getElementById("btnCellScanner");
+      var span = document.getElementsByClassName("close")[0];
+      btn.onclick = function() {
+        modal.style.display = "block";
+      }
+      span.onclick = function() {
+        modal.style.display = "none";
+      }
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+
+      var modalScenning = document.getElementById("modalCellScenning");
+      var btnScenning = document.getElementById("btnCellScanning");
+      var spanScenning = document.getElementsByClassName("close-scanning")[0];
+      btnScenning.onclick = function() {
+        modalScenning.style.display = "block";
+      }
+      spanScenning.onclick = function() {
+        modalScenning.style.display = "none";
+      }
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modalScenning.style.display = "none";
+        }
+      }
+    </script>
+  </body>
+</html>
